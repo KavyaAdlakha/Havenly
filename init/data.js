@@ -120,7 +120,7 @@ const sampleListings = [
     title: "Arctic Igloo Adventure",
     description:
       "Sleep under the Northern Lights in this glass igloo. A once-in-a-lifetime Arctic experience.",
-    image: "https://images.unsplash.com/photo-1505691934933-7f19fc3a4e9d?auto=format&fit=crop&w=800&q=60",
+    image: "https://images.unsplash.com/photo-1515279831895-4a03671e5edf?q=80&w=1020&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     price: 5000,
     location: "Lapland",
     country: "Finland",
