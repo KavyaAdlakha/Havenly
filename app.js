@@ -7,7 +7,8 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils(extra)/wrapAsync.js")
 const ExpressError = require("./utils(extra)/ExpressError.js");
-const {listingSchema} = require("./schema.js");
+const {listingSchema, reviewSchema} = require("./schema.js");
+const Review = require("../Havenly/models/review.js");
 
 main().then(() => {
     console.log("connected to DB")
@@ -53,7 +54,17 @@ const validatelisting = (req,res,next) => {
     } else{
         next();
     }
-}
+};
+
+const validatereview = (req,res,next) => {
+    let {error} = reviewSchema.validate(req.body);
+    if(error) {
+        let errMsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    } else{
+        next();
+    }
+};
 
 //index route------------------------------>
 
@@ -83,7 +94,7 @@ app.post("/listings", validatelisting,  wrapAsync(async (req,res,next) => {
 
 app.get("/listings/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
     res.render("listings/show.ejs", {listing})
 })
 );
@@ -113,6 +124,22 @@ app.delete("/listings/:id", wrapAsync(async (req,res) => {
     let deleteListing = await Listing.findByIdAndDelete(id);
     console.log(deleteListing)
     res.redirect("/listings");
+})
+);
+
+//Reviews  POST ROUTE----------------------------->
+
+app.post("/listings/:id/reviews", validatereview, wrapAsync( async (req,res) => {
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    console.log("new review saved")
+     res.redirect(`/listings/${listing._id}`);
 })
 );
 
